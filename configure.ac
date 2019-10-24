@@ -826,6 +826,29 @@ AC_ARG_ENABLE([vddk],
     ])
 AM_CONDITIONAL([HAVE_VDDK], [test "x$enable_vddk" = "xyes"])
 
+dnl See if user wants to disable oVirt ImageIO support. Also depends on libcurl.
+AC_ARG_ENABLE([ovirt-imageio],
+    [AS_HELP_STRING([--disable-ovirt-imageio],
+                    [disable oVirt ImageIO plugin])],
+    [AS_IF([test "x$enableval" = "xyes"],
+        [AC_MSG_CHECKING([for curl libraries])
+	 AS_IF([test "x$CURL_LIBS" != "x"],[
+	    AC_MSG_RESULT([Found curl libraries])
+	    enable_ovirt_imageio=yes
+        ],[
+	   AC_MSG_RESULT([Did not find curl libraries])
+            enable_ovirt_imageio=no
+        ])
+    ])],
+    [
+     AS_IF([test "x$CURL_LIBS" != "x" ],[
+        enable_ovirt_imageio=yes
+     ],[
+        enable_ovirt_imageio=no
+     ])
+    ])
+AM_CONDITIONAL([HAVE_OVIRT_IMAGEIO], [test "x$enable_ovirt_imageio" = "xyes"])
+
 dnl List of plugins and filters.
 lang_plugins="\
         lua \
@@ -857,6 +880,7 @@ non_lang_plugins="\
         memory \
         nbd \
         null \
+        ovirt-imageio \
         partitioning \
         pattern \
         random \
@@ -935,6 +959,7 @@ AC_CONFIG_FILES([Makefile
                  plugins/nbd/Makefile
                  plugins/null/Makefile
                  plugins/ocaml/Makefile
+                 plugins/ovirt-imageio/Makefile
                  plugins/partitioning/Makefile
                  plugins/pattern/Makefile
                  plugins/perl/Makefile
@@ -1029,6 +1054,8 @@ feature "libvirt ................................ " \
         test "x$HAVE_LIBVIRT_TRUE" = "x"
 feature "nbd .................................... " \
         test "x$HAVE_LIBNBD_TRUE" = "x"
+feature "ovirt-imageio........................... " \
+        test "x$HAVE_OVIRT_IMAGEIO_TRUE" = "x"
 feature "ssh .................................... " \
         test "x$HAVE_SSH_TRUE" = "x"
 feature "tar .................................... " \
