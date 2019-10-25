@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+../../nbdkit --dump-plugin .libs/nbdkit-ovirt-imageio-plugin.so
