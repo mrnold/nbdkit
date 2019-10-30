@@ -78,9 +78,38 @@ set_error (PyObject *self, PyObject *args)
   Py_RETURN_NONE;
 }
 
+static PyObject *
+read_password (PyObject *self, PyObject *args)
+{
+  const char *value;
+  char *password;
+  PyObject *result;
+
+  if (!PyArg_ParseTuple (args, "s", &value))
+    return NULL;
+  nbdkit_read_password(value, &password);
+  result = PyBytes_FromString(password);
+  free(password);
+  return result;
+}
+
+static PyObject *
+debug (PyObject *self, PyObject *args)
+{
+  const char *message;
+
+  if (!PyArg_ParseTuple(args, "s", &message))
+    return NULL;
+  nbdkit_debug(message);
+  Py_RETURN_NONE;
+}
+
 static PyMethodDef NbdkitMethods[] = {
   { "set_error", set_error, METH_VARARGS,
     "Store an errno value prior to throwing an exception" },
+  { "read_password", read_password, METH_VARARGS,
+    "Read a password from the command line" },
+  { "debug", debug, METH_VARARGS, "Debug print" },
   { NULL }
 };
 
